@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Counter & Stopwatch</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    /* Style for any text element to mimic a textbox with an inner white outline */
+    .textbox-text {
+      background-color: #dddddd;
+      border: 4px solid black;
+      box-shadow: inset 0 0 0 4px #fff;
+      padding: 3px 8px;
+      font-size: 1.2em;
+      display: inline-block;
+      margin: 5px;
+    }
+    .counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px;
+    }
+    input {
+      width: 150px;
+      text-align: center;
+      background-color: #dddddd;
+      border: 4px solid black;
+      box-shadow: inset 0 0 0 4px #fff;
+      padding: 3px 8px;
+      font-size: 1.2em;
+    }
+    /* Button Styling from Uiverse.io by arthur_6104 */
+    .box-button {
+      cursor: pointer;
+      border: 4px solid black;
+      background-color: gray;
+      padding-bottom: 10px;
+      transition: 0.1s ease-in-out;
+      user-select: none;
+    }
+    .button {
+      background-color: #dddddd;
+      border: 4px solid #fff;
+      padding: 3px 8px;
+    }
+    .button span {
+      font-size: 1.2em;
+      letter-spacing: 1px;
+    }
+    .box-button:active {
+      padding: 0;
+      margin-bottom: 10px;
+      transform: translateY(10px);
+    }
+  </style>
+</head>
+<body>
+  <h1 class="textbox-text">Multi Counter & Stopwatch</h1>
+  
+  <div class="box-button" onclick="addCounter()">
+    <div class="button">
+      <span>Add Counter</span>
+    </div>
+  </div>
+  <div id="counters"></div>
+  
+  <h2 class="textbox-text">Stopwatch</h2>
+  <p id="stopwatch" class="textbox-text">00:00:00.00</p>
+  <div class="box-button" onclick="startStopwatch()">
+    <div class="button">
+      <span>Start</span>
+    </div>
+  </div>
+  <div class="box-button" onclick="stopStopwatch()">
+    <div class="button">
+      <span>Stop</span>
+    </div>
+  </div>
+  <div class="box-button" onclick="resetStopwatch()">
+    <div class="button">
+      <span>Reset</span>
+    </div>
+  </div>
+  
+  <script>
+    let counterId = 0;
+    function addCounter() {
+      counterId++;
+      const div = document.createElement('div');
+      div.className = 'counter';
+      div.id = 'counter-' + counterId;
+      div.innerHTML = `
+        <input type="text" id="title-${counterId}" placeholder="Enter title" value="Counter ${counterId}">
+        <div class="box-button" onclick="changeCount(${counterId}, -1)">
+          <div class="button"><span>-</span></div>
+        </div>
+        <span id="count-${counterId}" class="textbox-text">0</span>
+        <div class="box-button" onclick="changeCount(${counterId}, 1)">
+          <div class="button"><span>+</span></div>
+        </div>
+        <div class="box-button" onclick="removeCounter(${counterId})">
+          <div class="button"><span>Remove</span></div>
+        </div>
+      `;
+      document.getElementById('counters').appendChild(div);
+    }
+    function changeCount(id, change) {
+      const span = document.getElementById('count-' + id);
+      span.textContent = parseInt(span.textContent) + change;
+    }
+    function removeCounter(id) {
+      document.getElementById('counter-' + id).remove();
+    }
+    
+    let stopwatchTime = 0, stopwatchInterval;
+    function startStopwatch() {
+      if (!stopwatchInterval) {
+        let startTime = performance.now() - stopwatchTime;
+        stopwatchInterval = setInterval(() => {
+          stopwatchTime = performance.now() - startTime;
+          let totalSeconds = Math.floor(stopwatchTime / 1000);
+          let milliseconds = Math.floor((stopwatchTime % 1000) / 10).toString().padStart(2, '0');
+          let hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+          let minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+          let seconds = String(totalSeconds % 60).padStart(2, '0');
+          document.getElementById('stopwatch').textContent = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }, 10);
+      }
+    }
+    function stopStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+    }
+    function resetStopwatch() {
+      stopStopwatch();
+      stopwatchTime = 0;
+      document.getElementById('stopwatch').textContent = "00:00:00.00";
+    }
+  </script>
+</body>
+</html>
